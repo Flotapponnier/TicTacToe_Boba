@@ -1,27 +1,43 @@
 import tkinter as tk
-from tkinter import ttk
+from src.Homepage import homepage
+from src.Gamepage import gamepage
+
+game_state = 0
+content_frame = None
 
 
 def create_window():
     window = tk.Tk()
     window.config(bg="grey")
     window.title("TicTacToe Boba")
-
-    width = window.winfo_screenwidth()
-    height = window.winfo_screenheight()
-    window.geometry(f"{width}x{height}")
+    window.geometry(f"{window.winfo_screenwidth()}x{window.winfo_screenheight()}")
     return window
 
 
-def homepage(window):
-    button = tk.Button(window, text="Play Tic Tac Toe")
-    button.pack()
+def clear_content():
+    global content_frame
+    if content_frame:
+        content_frame.destroy()
+        content_frame = None
+
+
+def set_game_state(value, window):
+    global game_state, content_frame
+    game_state = value
+    print(f"Game state changed to {game_state}")
+    clear_content()
+
+    if game_state == 0:
+        content_frame = homepage(window, set_game_state)
+    elif game_state == 1:
+        content_frame = gamepage(set_game_state, window)
 
 
 def main():
     window = create_window()
-    homepage(window)
+    set_game_state(0, window)
     window.mainloop()
 
 
-main()
+if __name__ == "__main__":
+    main()
