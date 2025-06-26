@@ -29,7 +29,7 @@ class GameInfo:
         self.rect_coords = []
         self.image_ids = [None] * 9
         self.hover_image_id = None
-        self.turn_label = None  # Add this line
+        self.turn_label = None
 
         # Normal images
         self.player1 = ImageTk.PhotoImage(img1)
@@ -46,6 +46,12 @@ class GameInfo:
                 self.turn_label.config(text="Bobanou turn !")
             else:
                 self.turn_label.config(text="Black boba turn !")
+
+    def update_map(self, i, current_player):
+        if current_player == 0:
+            self.map[i] = 1
+        else:
+            self.map[i] = 2
 
 
 def game(app):
