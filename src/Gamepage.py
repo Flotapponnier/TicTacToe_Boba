@@ -5,7 +5,7 @@ import random
 
 class GameInfo:
     def __init__(self):
-
+        # Load and resize sprites
         img1 = Image.open("sprites/boba.png").resize(
             (100, 100), Image.Resampling.LANCZOS
         )
@@ -13,13 +13,27 @@ class GameInfo:
             (100, 100), Image.Resampling.LANCZOS
         )
 
+        # Create transparent versions (50% opacity)
+        img1_transparent = img1.copy()
+        img1_transparent.putalpha(128)
+
+        img2_transparent = img2.copy()
+        img2_transparent.putalpha(128)
+
+        # Game state initialization
         self.map = [0 for _ in range(9)]
         self.player_turn = random.randint(0, 1)
         self.rect_coords = []
         self.image_ids = [None] * 9
+        self.hover_image_id = None
 
+        # Normal images
         self.player1 = ImageTk.PhotoImage(img1)
         self.player2 = ImageTk.PhotoImage(img2)
+
+        # Transparent images for hover preview
+        self.player1_transparent = ImageTk.PhotoImage(img1_transparent)
+        self.player2_transparent = ImageTk.PhotoImage(img2_transparent)
 
 
 def draw_grid(parent_frame, game_info):
@@ -78,7 +92,13 @@ def draw_title(parent_frame, game_info):
 
 
 def check_hooks(canvas, game_info):
+    game_info.hover_image_id = None
+
     def on_click(event):
+        if game_info.hover_image_id is not None:
+            canvas.delete(game_info.hover_image_id)
+            game_info.hover_image_id = None
+
         for i, (x1, y1, x2, y2) in enumerate(game_info.rect_coords):
             if x1 <= event.x <= x2 and y1 <= event.y <= y2:
                 if game_info.map[i] == 0:
@@ -95,7 +115,36 @@ def check_hooks(canvas, game_info):
                         game_info.player_turn = 0
                 break
 
+    def on_motion(event):
+
+        hovered_index = None
+        for i, (x1, y1, x2, y2) in enumerate(game_info.rect_coords):
+            if x1 <= event.x <= x2 and y1 <= event.y <= y2:
+                hovered_index = i
+                break
+
+        if game_info.hover_image_id is not None:
+            canvas.delete(game_info.hover_image_id)
+            game_info.hover_image_id = None
+
+        if hovered_index is not None and game_info.map[hovered_index] == 0:
+            x1, y1, x2, y2 = game_info.rect_coords[hovered_index]
+            cx = (x1 + x2) // 2
+            cy = (y1 + y2) // 2
+            if game_info.player_turn == 0:
+                hover_image = game_info.player1_transparent
+            else:
+                hover_image = game_info.player2_transparent
+            game_info.hover_image_id = canvas.create_image(cx, cy, image=hover_image)
+
+    def on_leave(event):
+        if game_info.hover_image_id is not None:
+            canvas.delete(game_info.hover_image_id)
+            game_info.hover_image_id = None
+
     canvas.bind("<Button-1>", on_click)
+    canvas.bind("<Motion>", on_motion)
+    canvas.bind("<Leave>", on_leave)
 
 
 def game(app):
