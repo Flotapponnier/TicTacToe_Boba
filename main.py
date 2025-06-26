@@ -1,43 +1,44 @@
 import tkinter as tk
-from src.Homepage import homepage
-from src.Gamepage import gamepage
-
-game_state = 0
-content_frame = None
+from src.Homepage import build_homepage
+from src.Gamepage import build_gamepage
 
 
-def create_window():
-    window = tk.Tk()
-    window.config(bg="grey")
-    window.title("TicTacToe Boba")
-    window.geometry(f"{window.winfo_screenwidth()}x{window.winfo_screenheight()}")
-    return window
+class TicTacToeApp:
+    def __init__(self):
+        self.window = tk.Tk()
+        self.window.title("TicTacToe Boba")
+        self.window.config(bg="grey")
+        self.window.geometry(
+            f"{self.window.winfo_screenwidth()}x{self.window.winfo_screenheight()}"
+        )
 
+        # Game state
+        self.game_state = 0
+        self.content_frame = None
 
-def clear_content():
-    global content_frame
-    if content_frame:
-        content_frame.destroy()
-        content_frame = None
+        # Homepage
+        self.buttons_visible = False
+        self.mode_buttons = {}
 
+    def run(self):
+        self.set_game_state(0)
+        self.window.mainloop()
 
-def set_game_state(value, window):
-    global game_state, content_frame
-    game_state = value
-    print(f"Game state changed to {game_state}")
-    clear_content()
+    def clear_content(self):
+        if self.content_frame:
+            self.content_frame.destroy()
+            self.content_frame = None
 
-    if game_state == 0:
-        content_frame = homepage(window, set_game_state)
-    elif game_state == 1:
-        content_frame = gamepage(set_game_state, window)
+    def set_game_state(self, new_state):
+        self.game_state = new_state
+        self.clear_content()
 
-
-def main():
-    window = create_window()
-    set_game_state(0, window)
-    window.mainloop()
+        if self.game_state == 0:
+            self.content_frame = build_homepage(self)
+        elif self.game_state == 1:
+            self.content_frame = build_gamepage(self)
 
 
 if __name__ == "__main__":
-    main()
+    app = TicTacToeApp()
+    app.run()

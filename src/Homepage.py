@@ -1,46 +1,44 @@
 import tkinter as tk
 
-toggle_state = {"buttons_visible": False}
-mode_buttons = {}
 
-
-def buttonplayclick(content_frame, set_game_state, window):
-    if toggle_state["buttons_visible"]:
-        for btn in mode_buttons.values():
+def button_play_click(app):
+    frame = app.content_frame
+    if app.buttons_visible:
+        for btn in app.mode_buttons.values():
             btn.pack_forget()
-        toggle_state["buttons_visible"] = False
+        app.buttons_visible = False
     else:
-        if not mode_buttons:
-            mode_buttons["pvp"] = tk.Button(
-                content_frame,
+        if not app.mode_buttons:
+            app.mode_buttons["pvp"] = tk.Button(
+                frame,
                 text="Player vs Player",
                 font=("Arial", 16),
                 padx=10,
                 pady=5,
-                command=lambda: set_game_state(1, window),
+                command=lambda: app.set_game_state(1),
             )
-            mode_buttons["pvia"] = tk.Button(
-                content_frame,
-                text="Player vs Ia",
+            app.mode_buttons["pvia"] = tk.Button(
+                frame,
+                text="Player vs IA",
                 font=("Arial", 16),
                 padx=10,
                 pady=5,
-                command=lambda: set_game_state(1, window),
+                command=lambda: app.set_game_state(1),
             )
-        mode_buttons["pvp"].pack(pady=5)
-        mode_buttons["pvia"].pack(pady=5)
-        toggle_state["buttons_visible"] = True
+        app.mode_buttons["pvp"].pack(pady=5)
+        app.mode_buttons["pvia"].pack(pady=5)
+        app.buttons_visible = True
 
 
-def homepage(window, set_game_state):
-    toggle_state["buttons_visible"] = False
-    mode_buttons.clear()
+def build_homepage(app):
+    app.buttons_visible = False
+    app.mode_buttons.clear()
 
-    content_frame = tk.Frame(window, bg="grey")
-    content_frame.pack(expand=True, fill="both")
+    frame = tk.Frame(app.window, bg="grey")
+    frame.pack(expand=True, fill="both")
 
     title_label = tk.Label(
-        content_frame,
+        frame,
         text="Tic Tac Toe Boba",
         font=("Arial", 24, "bold"),
         bg="grey",
@@ -48,14 +46,14 @@ def homepage(window, set_game_state):
     )
     title_label.pack(pady=(60, 20))
 
-    button = tk.Button(
-        content_frame,
+    play_button = tk.Button(
+        frame,
         text="Play Tic Tac Toe",
         font=("Arial", 16),
         padx=20,
         pady=10,
-        command=lambda: buttonplayclick(content_frame, set_game_state, window),
+        command=lambda: button_play_click(app),
     )
-    button.pack(pady=(0, 5))
+    play_button.pack(pady=(0, 5))
 
-    return content_frame
+    return frame
