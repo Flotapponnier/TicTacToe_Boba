@@ -42,30 +42,48 @@ def game_check(game_info):
 
 
 def show_victory(game_info, winner, app):
-    """Show victory message and play again button"""
     if winner == 1:
-        winner_text = " Boba Wins! "
+        winner_text = "🎉 Boba Wins! 🎉"
+        winner_color = "#FF69B4"
     else:
-        winner_text = " Black Boba Wins! "
+        winner_text = "🎉 Black Boba Wins! 🎉"
+        winner_color = "#4B0082"
 
-    game_info.turn_label.config(text=winner_text, fg="gold")
+    game_info.turn_label.config(text=winner_text, fg=winner_color)
 
     play_again_btn = tk.Button(
         game_info.turn_label.master,
-        text="Play Again",
+        text="🔄 Play Again! 🔄",
         fg="white",
-        bg="green",
-        font=("Arial", 18),
-        padx=20,
-        pady=10,
+        bg="#32CD32",
+        font=("Comic Sans MS", 20, "bold"),
+        padx=25,
+        pady=15,
+        relief="raised",
+        bd=5,
+        activebackground="#228B22",
+        activeforeground="white",
+        cursor="hand2",
         command=lambda: restart_game(app),
     )
-    play_again_btn.pack(pady=10)
+
+    def on_enter_again(e):
+        play_again_btn.config(
+            bg="#228B22", relief="sunken", font=("Comic Sans MS", 22, "bold")
+        )
+
+    def on_leave_again(e):
+        play_again_btn.config(
+            bg="#32CD32", relief="raised", font=("Comic Sans MS", 20, "bold")
+        )
+
+    play_again_btn.bind("<Enter>", on_enter_again)
+    play_again_btn.bind("<Leave>", on_leave_again)
+    play_again_btn.pack(pady=15)
     game_info.play_again_button = play_again_btn
 
 
 def restart_game(app):
-    """Restart the game by rebuilding the game page"""
     app.set_game_state(1)
 
 
@@ -97,7 +115,6 @@ def events_hooks(canvas, game_info, app):
                         game_info.update_map(i, game_info.player_turn)
                         game_info.player_turn = 0
 
-                    # Check for winner
                     if winner := game_check(game_info):
                         game_info.game_ended = True
                         show_victory(game_info, winner, app)
