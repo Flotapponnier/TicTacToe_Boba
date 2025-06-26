@@ -1,4 +1,5 @@
 import tkinter as tk
+import os
 from src.Homepage import build_homepage
 from src.Gamepage import build_gamepage
 
@@ -11,6 +12,13 @@ class TicTacToeApp:
         self.window.geometry(
             f"{self.window.winfo_screenwidth()}x{self.window.winfo_screenheight()}"
         )
+        # icon
+        icon_path = os.path.join("sprites", "boba.png")
+        try:
+            icon = tk.PhotoImage(file=icon_path)
+            self.window.iconphoto(False, icon)
+        except Exception as e:
+            print(f"Erreur chargement icône: {e}")
 
         # Game state
         self.game_state = 0
