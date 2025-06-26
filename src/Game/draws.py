@@ -36,21 +36,15 @@ def draw_title(parent_frame, game_info):
     )
     label.pack(pady=(20, 10))
 
-    boba_turn = tk.Label(
+    # Create a single label for turn display and store it in game_info
+    game_info.turn_label = tk.Label(
         parent_frame,
-        text="Bobanou turn !",
+        text="",
         fg="white",
         bg="black",
         font=("Arial", 24),
     )
-    black_boba_turn = tk.Label(
-        parent_frame,
-        text="Black boba turn !",
-        fg="white",
-        bg="black",
-        font=("Arial", 24),
-    )
-    if game_info.player_turn == 0:
-        boba_turn.pack(pady=(20, 10))
-    else:
-        black_boba_turn.pack(pady=(20, 10))
+    game_info.turn_label.pack(pady=(20, 10))
+
+    # Update the turn label text
+    game_info.update_turn_label()

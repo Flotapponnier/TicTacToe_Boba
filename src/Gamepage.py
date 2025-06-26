@@ -29,6 +29,7 @@ class GameInfo:
         self.rect_coords = []
         self.image_ids = [None] * 9
         self.hover_image_id = None
+        self.turn_label = None  # Add this line
 
         # Normal images
         self.player1 = ImageTk.PhotoImage(img1)
@@ -37,6 +38,14 @@ class GameInfo:
         # Transparent images for hover preview
         self.player1_transparent = ImageTk.PhotoImage(img1_transparent)
         self.player2_transparent = ImageTk.PhotoImage(img2_transparent)
+
+    def update_turn_label(self):
+        """Update the turn label text based on current player"""
+        if self.turn_label is not None:
+            if self.player_turn == 0:
+                self.turn_label.config(text="Bobanou turn !")
+            else:
+                self.turn_label.config(text="Black boba turn !")
 
 
 def game(app):

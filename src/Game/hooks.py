@@ -20,6 +20,8 @@ def events_hooks(canvas, game_info):
                         img_id = canvas.create_image(cx, cy, image=game_info.player2)
                         game_info.image_ids[i] = img_id
                         game_info.player_turn = 0
+
+                    game_info.update_turn_label()
                 break
 
     def on_motion(event):
