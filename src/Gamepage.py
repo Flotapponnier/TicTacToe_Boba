@@ -30,6 +30,8 @@ class GameInfo:
         self.image_ids = [None] * 9
         self.hover_image_id = None
         self.turn_label = None
+        self.game_ended = False
+        self.play_again_button = None
 
         # Normal images
         self.player1 = ImageTk.PhotoImage(img1)
@@ -43,9 +45,9 @@ class GameInfo:
         """Update the turn label text based on current player"""
         if self.turn_label is not None:
             if self.player_turn == 0:
-                self.turn_label.config(text="Bobanou turn !")
+                self.turn_label.config(text="Boba turn !", fg="white")
             else:
-                self.turn_label.config(text="Black boba turn !")
+                self.turn_label.config(text="Black boba turn !", fg="white")
 
     def update_map(self, i, current_player):
         if current_player == 0:
@@ -61,7 +63,7 @@ def game(app):
     app.content_frame = frame
     draw_title(frame, game_info)
     canvas = draw_grid(frame, game_info)
-    events_hooks(canvas, game_info)
+    events_hooks(canvas, game_info, app)
 
 
 def build_gamepage(app):
