@@ -38,20 +38,31 @@ def check_diagonal(game_info):
     return 0
 
 
+def is_board_full(game_info):
+    return all(cell != 0 for cell in game_info.map)
+
+
 def game_check(game_info):
-    return check_row(game_info) or check_col(game_info) or check_diagonal(game_info)
+    winner = check_row(game_info) or check_col(game_info) or check_diagonal(game_info)
+    if winner:
+        return winner
+    elif is_board_full(game_info):
+        return "tie"
+    return 0
 
 
 def show_victory(game_info, winner, app):
-    # In AI mode, determine who actually won
-    if app.type_game == 1:  # Player vs AI mode
-        if winner == 1:  # AI wins (player 1 in map = Black Boba)
+    if winner == "tie":
+        winner_text = "🤝 It's a Tie! 🤝"
+        winner_color = "#800080"
+    elif app.type_game == 1:
+        if winner == 1:
             winner_text = "🎉 Black Boba (AI) Wins! 🎉"
             winner_color = "#4B0082"
-        else:  # Human wins (player 0 in map = Boba)
+        else:
             winner_text = "🎉 Boba (You) Wins! 🎉"
             winner_color = "#FF69B4"
-    else:  # Player vs Player mode
+    else:
         if winner == 1:
             winner_text = "🎉 Black Boba Wins! 🎉"
             winner_color = "#4B0082"
@@ -94,16 +105,14 @@ def show_victory(game_info, winner, app):
 
 
 def restart_game(app):
-    app.set_game_state(1, app.type_game)  # Preserve the current game type
+    app.set_game_state(1, app.type_game)
 
 
 def get_available_moves(game_info):
-    """Get list of available positions (indices where map value is 0)"""
     return [i for i in range(9) if game_info.map[i] == 0]
 
 
 def ai_make_move(canvas, game_info, app):
-    """Make AI move after a short delay"""
     if game_info.game_ended:
         return
 
@@ -111,24 +120,21 @@ def ai_make_move(canvas, game_info, app):
     if not available_moves:
         return
 
-    # Choose random available position
     ai_choice = random.choice(available_moves)
 
-    # Get coordinates for the chosen position
     x1, y1, x2, y2 = game_info.rect_coords[ai_choice]
     cx = (x1 + x2) // 2
     cy = (y1 + y2) // 2
 
-    # Place AI move (AI is always player 1, human is player 0)
     img_id = canvas.create_image(cx, cy, image=game_info.player2)
     game_info.image_ids[ai_choice] = img_id
-    game_info.update_map(ai_choice, 1)  # AI is player 1 in map
-    game_info.player_turn = 0  # Switch back to human player
+    game_info.update_map(ai_choice, 1)
+    game_info.player_turn = 0
 
-    # Check for winner after AI move
-    if winner := game_check(game_info):
+    result = game_check(game_info)
+    if result:
         game_info.game_ended = True
-        show_victory(game_info, winner, app)
+        show_victory(game_info, result, app)
     else:
         game_info.update_turn_label()
 
@@ -151,7 +157,6 @@ def events_hooks(canvas, game_info, app):
                     cx = (x1 + x2) // 2
                     cy = (y1 + y2) // 2
 
-                    # Handle Player vs Player mode (type_game == 0)
                     if app.type_game == 0:
                         if game_info.player_turn == 0:
                             img_id = canvas.create_image(
@@ -168,21 +173,26 @@ def events_hooks(canvas, game_info, app):
                             game_info.update_map(i, game_info.player_turn)
                             game_info.player_turn = 0
 
-                    # Handle Player vs AI mode (type_game == 1)
+                        result = game_check(game_info)
+                        if result:
+                            game_info.game_ended = True
+                            show_victory(game_info, result, app)
+                        else:
+                            game_info.update_turn_label()
+
                     elif app.type_game == 1:
-                        # Only allow human player clicks
-                        if game_info.player_turn == 0:  # Human's turn
+                        if game_info.player_turn == 0:
                             img_id = canvas.create_image(
                                 cx, cy, image=game_info.player1
                             )
                             game_info.image_ids[i] = img_id
-                            game_info.update_map(i, 0)  # Human is player 0 in map
-                            game_info.player_turn = 1  # Switch to AI turn
+                            game_info.update_map(i, 0)
+                            game_info.player_turn = 1
 
-                            # Check for winner after human move
-                            if winner := game_check(game_info):
+                            result = game_check(game_info)
+                            if result:
                                 game_info.game_ended = True
-                                show_victory(game_info, winner, app)
+                                show_victory(game_info, result, app)
                             else:
                                 game_info.update_turn_label()
                                 canvas.after(
@@ -190,13 +200,6 @@ def events_hooks(canvas, game_info, app):
                                 )
                         else:
                             return
-
-                    if app.type_game == 0:
-                        if winner := game_check(game_info):
-                            game_info.game_ended = True
-                            show_victory(game_info, winner, app)
-                        else:
-                            game_info.update_turn_label()
                 break
 
     def on_motion(event):
