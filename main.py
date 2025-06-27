@@ -13,22 +13,21 @@ class TicTacToeApp:
         self.window.geometry(
             f"{self.window.winfo_screenwidth()}x{self.window.winfo_screenheight()}"
         )
-
         icon_path = os.path.join("sprites", "boba.png")
         try:
             icon = tk.PhotoImage(file=icon_path)
             self.window.iconphoto(False, icon)
         except Exception as e:
             print(f"Error loading icon: {e}")
-
         self.game_state = 0
+        self.type_game = 0
         self.content_frame = None
         self.buttons_visible = False
         self.mode_buttons = {}
         self.pearl_animation = PearlAnimation(self.window)
 
     def run(self):
-        self.set_game_state(0)
+        self.set_game_state(0, 0)
         self.window.mainloop()
 
     def clear_content(self):
@@ -37,10 +36,14 @@ class TicTacToeApp:
             self.content_frame.destroy()
             self.content_frame = None
 
-    def set_game_state(self, new_state):
+    def set_game_state(self, new_state, type_game=None):
         self.game_state = new_state
-        self.clear_content()
+        if type_game is not None:
+            self.type_game = type_game
+        if new_state == 0:
+            self.type_game = 0
 
+        self.clear_content()
         if self.game_state == 0:
             self.content_frame = build_homepage(self)
             self.pearl_animation.start_animation(self.content_frame)

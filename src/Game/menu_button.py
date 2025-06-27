@@ -15,7 +15,7 @@ def menu_button(app):
         activebackground="#DC143C",
         activeforeground="white",
         cursor="hand2",
-        command=lambda: app.set_game_state(0),
+        command=lambda: app.set_game_state(0, 0),
     )
 
     def on_enter_menu(e):

@@ -21,7 +21,7 @@ def button_play_click(app):
                 activebackground="#FF69B4",
                 activeforeground="white",
                 cursor="hand2",
-                command=lambda: app.set_game_state(1),
+                command=lambda: app.set_game_state(1, 0),
             )
 
             app.mode_buttons["pvia"] = tk.Button(
@@ -37,7 +37,7 @@ def button_play_click(app):
                 activebackground="#32CD32",
                 activeforeground="white",
                 cursor="hand2",
-                command=lambda: app.set_game_state(1),
+                command=lambda: app.set_game_state(1, 1),
             )
 
             def on_enter_pvp(e):
