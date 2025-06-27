@@ -3,6 +3,7 @@ import os
 from src.Homepage import build_homepage
 from src.Gamepage import build_gamepage
 from src.pearl_animation import PearlAnimation
+from src.background_music import BackgroundMusicManager
 
 
 class TicTacToeApp:
@@ -19,12 +20,19 @@ class TicTacToeApp:
             self.window.iconphoto(False, icon)
         except Exception as e:
             print(f"Error loading icon: {e}")
+
         self.game_state = 0
         self.type_game = 0
         self.content_frame = None
         self.buttons_visible = False
         self.mode_buttons = {}
         self.pearl_animation = PearlAnimation(self.window)
+
+        # Initialize background music
+        self.music_manager = BackgroundMusicManager(volume=0.2)
+        music_path = os.path.join("music", "retro_background.mp3")
+        if self.music_manager.load_music(music_path):
+            self.music_manager.play_music(loop=True)
 
     def run(self):
         self.set_game_state(0, 0)
@@ -50,6 +58,10 @@ class TicTacToeApp:
         elif self.game_state == 1:
             self.content_frame = build_gamepage(self)
             self.pearl_animation.start_animation(self.content_frame)
+
+    def __del__(self):
+        if hasattr(self, "music_manager"):
+            self.music_manager.cleanup()
 
 
 if __name__ == "__main__":
