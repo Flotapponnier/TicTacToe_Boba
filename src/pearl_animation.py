@@ -10,11 +10,18 @@ class PearlAnimation:
         self.pearls = []
         self.pearl_image = None
         self.running = False
+        self.animation_job = None
+        self.load_pearl_image()
 
+    def load_pearl_image(self):
         try:
             pearl_img = Image.open("sprites/pearl.png").resize(
                 (20, 20), Image.Resampling.LANCZOS
             )
+
+            if pearl_img.mode != "RGBA":
+                pearl_img = pearl_img.convert("RGBA")
+
             self.pearl_image = ImageTk.PhotoImage(pearl_img)
         except Exception as e:
             print(f"Error loading pearl: {e}")
@@ -24,7 +31,6 @@ class PearlAnimation:
         screen_width = self.parent.winfo_screenwidth()
         center_zone_start = screen_width * 0.3
         center_zone_end = screen_width * 0.7
-
         if random.choice([True, False]):
             return random.randint(20, int(center_zone_start))
         else:
@@ -78,7 +84,7 @@ class PearlAnimation:
                 self.pearls.remove(pearl)
 
         if self.running:
-            self.parent.after(80, self.animate_pearls)
+            self.animation_job = self.parent.after(80, self.animate_pearls)
 
     def add_pearl(self):
         if self.pearl_image is None:
@@ -89,17 +95,20 @@ class PearlAnimation:
         speed = random.uniform(1.5, 3.5)
 
         try:
-            pearl_label = tk.Label(
+            pearl_canvas = tk.Canvas(
                 self.parent,
-                image=self.pearl_image,
+                width=20,
+                height=20,
                 bg="#87CEEB",
-                borderwidth=0,
                 highlightthickness=0,
+                borderwidth=0,
             )
-            pearl_label.place(x=x, y=y)
+
+            pearl_canvas.create_image(10, 10, image=self.pearl_image)
+            pearl_canvas.place(x=x, y=y)
 
             pearl_data = {
-                "label": pearl_label,
+                "label": pearl_canvas,
                 "base_x": x,
                 "y": y,
                 "speed": speed,
@@ -115,6 +124,11 @@ class PearlAnimation:
 
     def stop_animation(self):
         self.running = False
+
+        if self.animation_job is not None:
+            self.parent.after_cancel(self.animation_job)
+            self.animation_job = None
+
         for pearl in self.pearls:
             try:
                 pearl["label"].destroy()
