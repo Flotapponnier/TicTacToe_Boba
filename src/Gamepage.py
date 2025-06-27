@@ -1,6 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
-from .Game.hooks import events_hooks
+from .Game.hooks import setup_game_events
 from .Game.draws import draw_grid, draw_title
 from .Game.menu_button import menu_button
 import random
@@ -55,7 +55,7 @@ def game(app):
     app.content_frame = frame
     draw_title(frame, game_info)
     canvas = draw_grid(frame, game_info)
-    events_hooks(canvas, game_info, app)
+    setup_game_events(canvas, game_info, app)
 
 
 def build_gamepage(app):
