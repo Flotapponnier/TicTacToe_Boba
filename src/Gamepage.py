@@ -7,12 +7,16 @@ import random
 
 
 class GameInfo:
-    def __init__(self):
+    def __init__(self, app):
+        self.app = app
+        scale = app.get_window_scale()
+        image_size = max(int(100 * scale), 60)
+
         img1 = Image.open("sprites/boba.png").resize(
-            (100, 100), Image.Resampling.LANCZOS
+            (image_size, image_size), Image.Resampling.LANCZOS
         )
         img2 = Image.open("sprites/black_boba.png").resize(
-            (100, 100), Image.Resampling.LANCZOS
+            (image_size, image_size), Image.Resampling.LANCZOS
         )
 
         img1_transparent = img1.copy()
@@ -34,12 +38,26 @@ class GameInfo:
         self.player1_transparent = ImageTk.PhotoImage(img1_transparent)
         self.player2_transparent = ImageTk.PhotoImage(img2_transparent)
 
+    def get_responsive_font_size(self, base_size):
+        """Calcule la taille de police responsive pour ce GameInfo"""
+        scale = self.app.get_window_scale()
+        return max(int(base_size * scale), 12)
+
     def update_turn_label(self):
         if self.turn_label is not None:
+            font_size = self.get_responsive_font_size(22)
             if self.player_turn == 0:
-                self.turn_label.config(text="🧋 Boba turn! 🧋", fg="#FF69B4")
+                self.turn_label.config(
+                    text="🧋 Boba turn! 🧋",
+                    fg="#FF69B4",
+                    font=("Comic Sans MS", font_size, "bold"),
+                )
             else:
-                self.turn_label.config(text="⚫ Black boba turn! ⚫", fg="#4B0082")
+                self.turn_label.config(
+                    text="⚫ Black boba turn! ⚫",
+                    fg="#4B0082",
+                    font=("Comic Sans MS", font_size, "bold"),
+                )
 
     def update_map(self, i, current_player):
         if current_player == 0:
@@ -49,7 +67,7 @@ class GameInfo:
 
 
 def game(app):
-    game_info = GameInfo()
+    game_info = GameInfo(app)
     frame = tk.Frame(app.window, bg="#87CEEB")
     frame.pack(expand=True, fill="both")
     app.content_frame = frame

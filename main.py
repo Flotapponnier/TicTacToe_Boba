@@ -11,9 +11,9 @@ class TicTacToeApp:
         self.window = tk.Tk()
         self.window.title("TicTacToe Boba")
         self.window.config(bg="#87CEEB")
-        self.window.geometry(
-            f"{self.window.winfo_screenwidth()}x{self.window.winfo_screenheight()}"
-        )
+
+        self.setup_responsive_window()
+
         icon_path = os.path.join("sprites", "boba.png")
         try:
             icon = tk.PhotoImage(file=icon_path)
@@ -28,11 +28,49 @@ class TicTacToeApp:
         self.mode_buttons = {}
         self.pearl_animation = PearlAnimation(self.window)
 
-        # Initialize background music
         self.music_manager = BackgroundMusicManager(volume=0.2)
         music_path = os.path.join("music", "retro_background.mp3")
         if self.music_manager.load_music(music_path):
             self.music_manager.play_music(loop=True)
+
+        self.window.bind("<Configure>", self.on_window_resize)
+
+    def setup_responsive_window(self):
+        self.window.minsize(800, 600)
+
+        screen_width = self.window.winfo_screenwidth()
+        screen_height = self.window.winfo_screenheight()
+
+        initial_width = int(screen_width * 0.8)
+        initial_height = int(screen_height * 0.8)
+
+        x = (screen_width - initial_width) // 2
+        y = (screen_height - initial_height) // 2
+
+        self.window.geometry(f"{initial_width}x{initial_height}+{x}+{y}")
+
+        self.window.resizable(True, True)
+
+    def on_window_resize(self, event):
+        if event.widget == self.window:
+            if hasattr(self, "pearl_animation") and self.pearl_animation.running:
+                pass
+
+    def get_window_scale(self):
+        """Calcule le facteur d'échelle basé sur la taille de la fenêtre"""
+        base_width = 1200
+        base_height = 800
+
+        current_width = self.window.winfo_width()
+        current_height = self.window.winfo_height()
+
+        if current_width <= 1 or current_height <= 1:
+            return 1.0
+
+        scale_x = current_width / base_width
+        scale_y = current_height / base_height
+
+        return min(scale_x, scale_y, 1.5)
 
     def run(self):
         self.set_game_state(0, 0)
